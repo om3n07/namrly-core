@@ -18,3 +18,4 @@ C:\Users\Matt\Documents\GitHub\namrly-core\obj\Debug\netcoreapp2.0\namrly.Assemb
 C:\Users\Matt\Documents\GitHub\namrly-core\obj\Debug\netcoreapp2.0\namrly.AssemblyInfo.cs
 C:\Users\Matt\Documents\GitHub\namrly-core\obj\Debug\netcoreapp2.0\namrly.dll
 C:\Users\Matt\Documents\GitHub\namrly-core\obj\Debug\netcoreapp2.0\namrly.pdb
+C:\Users\Matt\Documents\GitHub\namrly-core\bin\Debug\netcoreapp2.0\wordNikCred.txt

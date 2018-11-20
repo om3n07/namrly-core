@@ -1,9 +1,10 @@
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 public class NamrlyService : INamrlyService
 {
-    private RandomWordProxy _randomWordProxy = null;
+    private WordnikClient _randomWordProxy = null;
     private static readonly Random R = new Random();
     private readonly string[] _vowels = { "a", "e", "i", "o", "u" };
 
@@ -17,24 +18,50 @@ public class NamrlyService : INamrlyService
             }
         }
 
-    protected RandomWordProxy RandomWordProxy => _randomWordProxy != null ? _randomWordProxy : _randomWordProxy = new RandomWordProxy();
+    protected WordnikClient RandomWordProxy => _randomWordProxy != null ? _randomWordProxy : _randomWordProxy = new WordnikClient();
     
     public NamrlyService()
     {
         
     }
 
-    public async Task<string> GetRandomName(bool includeAdditionalSuffixes = false)
+    public async Task<IEnumerable<string>> GetRandomNames(bool includeAdditionalSuffixes = false, int numResults = 1)
     {
-        var result = await this.RandomWordProxy.GetRandomWord(R.Next(0, 5));
-            if (this.ShouldDropVowel) this.DropVowel(ref result);
-            result += GetRandomSuffix(includeAdditionalSuffixes);
-            return (result);
+        var results = new List<string>();
+
+        var words = await this.RandomWordProxy.GetRandomWords(numResults);
+        
+        foreach(var word in words) {
+            var newWord = word.Clone().ToString();
+
+            if (this.ShouldDropVowel) this.DropVowel(ref newWord);
+            newWord += GetRandomSuffix(includeAdditionalSuffixes);
+
+            results.Add(newWord);
+        }
+        
+        return results;
     }
 
-    public async Task<string> GetRandomName(string baseName, bool includeAdditionalSuffixes = false)
+    public async Task<IEnumerable<string>> GetRandomNames(string baseWord, bool includeAdditionalSuffixes = false, int numResults = 1)
     {
-        throw new System.NotImplementedException();
+        var results = new List<string>();
+
+        var synonyms = await this.RandomWordProxy.GetSynonyms(baseWord, numResults);
+        if (synonyms != null)
+        {
+            foreach (var synonym in synonyms) {
+                var newWord = synonym.Clone().ToString();
+
+                if (this.ShouldDropVowel) this.DropVowel(ref newWord);
+                newWord += GetRandomSuffix(includeAdditionalSuffixes);
+
+                results.Add(newWord);
+            }
+        }
+        else  results = null;
+
+        return (results);
     }
 
     private static string GetRandomSuffix(bool includeAdditionalSuffixes)

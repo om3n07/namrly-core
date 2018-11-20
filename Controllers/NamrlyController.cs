@@ -13,43 +13,18 @@ namespace namrly.Controllers
 
         public NamrlyService NamrlyService => this._namrlyService != null ? this._namrlyService : this._namrlyService = new NamrlyService();
 
-        // // GET api/values
-        // [HttpGet]
-        // public async Task<IEnumerable<string>> GetName()
-        // {
-        //     var name = await this.NamrlyService.GetRandomName();
-        //     return new string[] { string.Format("{0}ly", name) };
-        // }
 
         [HttpGet]
-        public async Task<IEnumerable<string>> GetNames([FromQuery] string nameBase, [FromQuery] int? numResults = 0)
+        public async Task<IEnumerable<string>> GetNames(
+            [FromQuery] string nameBase = null,
+            [FromQuery] bool includeAdditionalSuffixes = false,
+             [FromQuery] int? numResults = null)
         {
-            return new string[] { await this.NamrlyService.GetRandomName() };
+            if (!string.IsNullOrEmpty(nameBase)) {
+                return await this.NamrlyService.GetRandomNames(nameBase, includeAdditionalSuffixes, numResults ?? 1);
+            } else {
+                return await this.NamrlyService.GetRandomNames(includeAdditionalSuffixes, numResults ?? 1);
+            }
         }
-
-        // GET api/values/5
-        // [HttpGet("{id}")]
-        // public string GetName(int id)
-        // {
-        //     return "value";
-        // }
-
-        // // POST api/values
-        // [HttpPost]
-        // public void Post([FromBody]string value)
-        // {
-        // }
-
-        // // PUT api/values/5
-        // [HttpPut("{id}")]
-        // public void Put(int id, [FromBody]string value)
-        // {
-        // }
-
-        // // DELETE api/values/5
-        // [HttpDelete("{id}")]
-        // public void Delete(int id)
-        // {
-        // }
     }
 }
