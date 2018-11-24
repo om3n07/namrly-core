@@ -9,19 +9,27 @@ public class WordnikClient {
     private readonly string _wordnikApiKey;
     private readonly string _wordnikBaseAddress = "https://api.wordnik.com";
     private readonly string _wordnikApiVersion  = "v4";
-    private readonly string _entityPath = "words.json";
+    private readonly string _WordsEntityPath = "words.json";
+    private readonly string _WordEntityPath = "word.json";
+    private readonly int _minWordLength = 3;
+    private readonly int _maxWordLength = 8;
 
-    private string WordnikApiPath => $"{_wordnikBaseAddress}/{_wordnikApiVersion}/{_entityPath}";
+    private string WordsPath => $"{_wordnikBaseAddress}/{_wordnikApiVersion}/{_WordsEntityPath}";
+    private string WordPath => $"{_wordnikBaseAddress}/{_wordnikApiVersion}/{_WordEntityPath}";
 
     
     public WordnikClient() {
         this._wordnikApiKey = this.GetApiKey();
     }
 
-    public async Task<List<string>> GetRandomWords(int numWords = 1) {
+    public async Task<IEnumerable<string>> GetRandomWords(int numWords) {
         using (var client = new HttpClient())
         {
-            var request = this.WordnikApiPath + "/randomWords?hasDictionaryDef=true&limit = " + numWords + "&api_key="+ this._wordnikApiKey;
+            var request = this.WordsPath 
+            + "/randomWords?hasDictionaryDef=true&limit=" + numWords 
+            + "&api_key=" + this._wordnikApiKey
+            + "&minLength=" + _minWordLength
+            + "&maxLength=" + _maxWordLength;
             var response = await client.GetAsync(request);
             var jsonString = await response.Content.ReadAsStringAsync();
 
@@ -30,16 +38,27 @@ public class WordnikClient {
         
     }
 
-    public async Task<List<string>> GetSynonyms(string baseWord, int numWords = 0) {
+    public async Task<IEnumerable<string>> GetSynonyms(string baseWord) {
+        if (baseWord == null) return null;
+        var synonyms = new List<string>();
+
         using (var client = new HttpClient())
         {
             var request =
-                this.WordnikApiPath + "/" + baseWord 
-                + "/relatedWords?useCanonical=false&relationshipTypes=synonym&limitPerRelationshipType=" + numWords + " api_key="+ this._wordnikApiKey;
-            var response = await client.GetAsync(request);
-            var jsonString = await response.Content.ReadAsStringAsync();
+                this.WordPath + "/" + baseWord 
+                + "/relatedWords?useCanonical=false&relationshipTypes=synonym&limitPerRelationshipType=" + 99 
+                + "&api_key="+ this._wordnikApiKey
+                + "&minLength=" + _minWordLength
+                + "&maxLength=" + _maxWordLength;
+            var rawResponse = await client.GetAsync(request);
+            var jsonString = await rawResponse.Content.ReadAsStringAsync();
+            var response = JsonConvert.DeserializeObject<WordnikResponse[]>(jsonString);
 
-            return JsonConvert.DeserializeObject<List<WordnikSingleResponse>>(jsonString).Select(word => word.word).ToList();
+            if (response != null && response.Length > 0 && response[0].words.Length > 0) {
+                synonyms = response[0].words.ToList();
+            }
+            
+            return synonyms;
         }
     }
 

@@ -21,9 +21,9 @@ namespace namrly.Controllers
              [FromQuery] int? numResults = null)
         {
             if (!string.IsNullOrEmpty(baseWord)) {
-                return await this.NamrlyService.GetRandomNames(baseWord, includeAdditionalSuffixes, numResults ?? 1);
+                return await this.NamrlyService.GetRandomNames(baseWord, numResults ?? 1, includeAdditionalSuffixes);
             } else {
-                return await this.NamrlyService.GetRandomNames(includeAdditionalSuffixes, numResults ?? 1);
+                return await this.NamrlyService.GetRandomNames( numResults ?? 1, includeAdditionalSuffixes);
             }
         }
     }

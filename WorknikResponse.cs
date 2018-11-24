@@ -9,8 +9,8 @@ namespace Namrly.WordnikApi
 {
     public class WordnikResponse
     {
-        public string RelationshipType { get; set; }
-        public List<string> Words { get; set; } 
+        public string relationshipType { get; set; }
+        public string[] words { get; set; } 
     }
 
     public class WordnikSingleResponse

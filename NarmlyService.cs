@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 public class NamrlyService : INamrlyService
@@ -9,14 +10,14 @@ public class NamrlyService : INamrlyService
     private readonly string[] _vowels = { "a", "e", "i", "o", "u" };
 
     private bool ShouldDropVowel
+    {
+        get
         {
-            get
-            {
-                // 25%
-                var s = R.Next(0, 3);
-                return s == 1;
-            }
+            // 25%
+            var s = R.Next(0, 3);
+            return s == 1;
         }
+    }
 
     protected WordnikClient RandomWordProxy => _randomWordProxy != null ? _randomWordProxy : _randomWordProxy = new WordnikClient();
     
@@ -25,30 +26,67 @@ public class NamrlyService : INamrlyService
         
     }
 
-    public async Task<IEnumerable<string>> GetRandomNames(bool includeAdditionalSuffixes = false, int numResults = 1)
+    public async Task<string> GetRandomName(bool includeAdditionalSuffixes = false) 
+    {
+        var name = string.Empty;
+        var results = (await this.GetRandomNames(1, includeAdditionalSuffixes)).ToList();
+
+        // Get a random name from the list of returned results.
+        if (results != null && results.Count > 0) {
+            name = results[0];
+        }
+
+        return name;
+    }
+
+    public async Task<string> GetRandomName(string baseWord, bool includeAdditionalSuffixes = false) 
+    {
+        var name = string.Empty;
+        var results = (await this.GetRandomNames(baseWord, 1, includeAdditionalSuffixes)).ToList();
+
+        // Get a random name from the list of returned results.
+        if (results != null && results.Count > 0) {
+            name = results[0];
+        }
+
+        return name;
+    }
+
+
+    public async Task<IEnumerable<string>> GetRandomNames(int numResults = 1)
+    {
+        return await this.GetRandomNames(null, numResults);
+    }
+    
+    public async Task<IEnumerable<string>> GetRandomNames(int numResults = 1, bool includeAdditionalSuffixes = false)
     {
         var results = new List<string>();
-
         var words = await this.RandomWordProxy.GetRandomWords(numResults);
-        
-        foreach(var word in words) {
-            var newWord = word.Clone().ToString();
 
-            if (this.ShouldDropVowel) this.DropVowel(ref newWord);
-            newWord += GetRandomSuffix(includeAdditionalSuffixes);
+        if (words != null && words.ToList().Count > 0) {
+            foreach(var word in words) {
+                var newWord = word.Clone().ToString();
 
-            results.Add(newWord);
+                if (this.ShouldDropVowel) this.DropVowel(ref newWord);
+                newWord += GetRandomSuffix(includeAdditionalSuffixes);
+
+                results.Add(newWord);
+            }
         }
-        
+           
         return results;
     }
 
-    public async Task<IEnumerable<string>> GetRandomNames(string baseWord, bool includeAdditionalSuffixes = false, int numResults = 1)
+    public async Task<IEnumerable<string>> GetRandomNames(string baseWord, int numResults = 1, bool includeAdditionalSuffixes = false)
     {
         var results = new List<string>();
 
-        var synonyms = await this.RandomWordProxy.GetSynonyms(baseWord, numResults);
-        if (synonyms != null)
+        // gets the list of synonyms, then shuffles
+        var synonyms = (await this.RandomWordProxy.GetSynonyms(baseWord))
+        .ToList()
+        .OrderBy(a => Guid.NewGuid()).ToList();
+
+        if (synonyms != null && synonyms.Count > 0)
         {
             foreach (var synonym in synonyms) {
                 var newWord = synonym.Clone().ToString();
@@ -57,11 +95,13 @@ public class NamrlyService : INamrlyService
                 newWord += GetRandomSuffix(includeAdditionalSuffixes);
 
                 results.Add(newWord);
+
+                // don't want to return more than the requested number of results.
+                if (--numResults == 0) break;
             }
         }
-        else  results = null;
 
-        return (results);
+        return results;
     }
 
     private static string GetRandomSuffix(bool includeAdditionalSuffixes)
@@ -107,5 +147,6 @@ public class NamrlyService : INamrlyService
 
     enum AdditionalSuffixes
     {
-       bon
+       bon,
+       a
     }
