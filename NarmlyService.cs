@@ -9,16 +9,6 @@ public class NamrlyService : INamrlyService
     private static readonly Random R = new Random();
     private readonly string[] _vowels = { "a", "e", "i", "o", "u" };
 
-    private bool ShouldDropVowel
-    {
-        get
-        {
-            // 25%
-            var s = R.Next(0, 3);
-            return s == 1;
-        }
-    }
-
     protected WordnikClient RandomWordProxy => _randomWordProxy != null ? _randomWordProxy : _randomWordProxy = new WordnikClient();
     
     public NamrlyService()
@@ -32,7 +22,8 @@ public class NamrlyService : INamrlyService
         var results = (await this.GetRandomNames(1, includeAdditionalSuffixes)).ToList();
 
         // Get a random name from the list of returned results.
-        if (results != null && results.Count > 0) {
+        if (results != null && results.Count > 0)
+        {
             name = results[0];
         }
 
@@ -45,7 +36,8 @@ public class NamrlyService : INamrlyService
         var results = (await this.GetRandomNames(baseWord, 1, includeAdditionalSuffixes)).ToList();
 
         // Get a random name from the list of returned results.
-        if (results != null && results.Count > 0) {
+        if (results != null && results.Count > 0)
+        {
             name = results[0];
         }
 
@@ -63,11 +55,17 @@ public class NamrlyService : INamrlyService
         var results = new List<string>();
         var words = await this.RandomWordProxy.GetRandomWords(numResults);
 
-        if (words != null && words.ToList().Count > 0) {
-            foreach(var word in words) {
+        if (words != null && words.ToList().Count > 0)
+        {
+            foreach(var word in words) 
+            {
                 var newWord = word.Clone().ToString();
 
-                if (this.ShouldDropVowel) this.DropVowel(ref newWord);
+                if (this.ShouldDropVowel()) 
+                {
+                    this.DropVowel(ref newWord);
+                }
+            
                 newWord += GetRandomSuffix(includeAdditionalSuffixes);
 
                 results.Add(newWord);
@@ -91,7 +89,7 @@ public class NamrlyService : INamrlyService
             foreach (var synonym in synonyms) {
                 var newWord = synonym.Clone().ToString();
 
-                if (this.ShouldDropVowel) this.DropVowel(ref newWord);
+                if (this.ShouldDropVowel()) this.DropVowel(ref newWord);
                 newWord += GetRandomSuffix(includeAdditionalSuffixes);
 
                 results.Add(newWord);
@@ -106,8 +104,19 @@ public class NamrlyService : INamrlyService
 
     private static string GetRandomSuffix(bool includeAdditionalSuffixes)
     {
-        if (includeAdditionalSuffixes && R.Next(2) == 0) return ((AdditionalSuffixes)R.Next(0, Enum.GetNames(typeof(AdditionalSuffixes)).Length)).ToString();
+        if (includeAdditionalSuffixes && R.Next(2) == 0) 
+        { 
+            return ((AdditionalSuffixes)R.Next(0, Enum.GetNames(typeof(AdditionalSuffixes)).Length)).ToString(); 
+        }
+        
         return ((Suffixes)R.Next(0, Enum.GetNames(typeof(Suffixes)).Length)).ToString();
+    }
+
+    private bool ShouldDropVowel()
+    {
+        // 25%
+        var s = R.Next(0, 3);
+        return s == 1;
     }
 
      // Drops either the last letter or second to last letter if one of them is a vowel
@@ -123,6 +132,7 @@ public class NamrlyService : INamrlyService
                 word = word.Substring(0, word.Length - 1);
                 break;
             }
+            
             if (word[word.Length - 2].ToString() == v)
             {
                 var e = word[word.Length - 1];
@@ -136,7 +146,7 @@ public class NamrlyService : INamrlyService
     }
 }
 
- enum Suffixes
+    enum Suffixes
     {
         ly,
         r,
