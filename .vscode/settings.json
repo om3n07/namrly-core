@@ -1,0 +1,4 @@
+{
+    "appService.defaultWebAppToDeploy": "/subscriptions/6c224cc5-e46f-41b0-ad1c-565d51830a8e/resourceGroups/appsvc_rg_windows_centralus/providers/Microsoft.Web/sites/namrly-api",
+    "appService.deploySubpath": ""
+}
