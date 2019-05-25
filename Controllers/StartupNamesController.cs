@@ -15,16 +15,21 @@ namespace namrly.Controllers
 
 
         [HttpGet]
-        public async Task<IEnumerable<string>> GetNames(
+        public async Task<ActionResult> GetNames(
             [FromQuery] string baseWord = null,
             [FromQuery] bool includeAdditionalSuffixes = false,
              [FromQuery] int? numResults = null)
         {
+            IEnumerable<string> results;
             if (!string.IsNullOrEmpty(baseWord)) {
-                return await this.NamrlyService.GetRandomNames(baseWord, numResults ?? 1, includeAdditionalSuffixes);
+                results = await this.NamrlyService.GetRandomNames(baseWord, numResults ?? 1, includeAdditionalSuffixes);
             } else {
-                return await this.NamrlyService.GetRandomNames( numResults ?? 1, includeAdditionalSuffixes);
+                results = await this.NamrlyService.GetRandomNames( numResults ?? 1, includeAdditionalSuffixes);
             }
+
+            if (results == null) return NoContent();
+
+            return this.Ok(results);
         }
     }
 }

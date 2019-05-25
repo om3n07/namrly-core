@@ -17,7 +17,7 @@ namespace namrly.Controllers
 
 
         [HttpGet]
-        public async Task<string> GetName(
+        public async Task<ActionResult> GetName(
             [FromQuery] string baseWord = null,
             [FromQuery] bool includeAdditionalSuffixes = false)
         {
@@ -31,7 +31,8 @@ namespace namrly.Controllers
                 results = await this.NamrlyService.GetRandomName(includeAdditionalSuffixes);
             }
 
-            return results ?? string.Empty;
+            if (results == null) return this.NoContent();
+            return this.Ok(results);
         }
     }
 }
