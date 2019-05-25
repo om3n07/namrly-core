@@ -78,11 +78,14 @@ namespace Namrly.Services
             }
         }
 
-        // TODO: Load the crednentials from a config of some sort. I will want to use a Heroku env variable, etc.
         private string GetApiKey()
         {
-            var path = System.IO.Path.Combine(System.AppDomain.CurrentDomain.BaseDirectory.ToString(), "wordNikCred.txt");
-            return System.IO.File.ReadAllText(path);
+            if (Environment.GetEnvironmentVariable("WORDNIK_API_KEY") != null)
+            {
+                return Environment.GetEnvironmentVariable("WORDNIK_API_KEY");
+            }
+            
+            throw new Exception("Could not locate Wordnik API Key environment variable. Check \"launchSettings.json\" in Namrly/Properties.");
         }
     }
 }
