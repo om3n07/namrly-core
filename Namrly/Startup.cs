@@ -8,6 +8,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Namrly.Services;
 using Swashbuckle.AspNetCore.Swagger;
 
 namespace Namrly
@@ -25,10 +26,12 @@ namespace Namrly
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMvc();
+            services.AddSingleton(typeof(IRandomWordService), typeof(WordnikClient));
+            services.AddSingleton(typeof(INamrlyService), typeof(NamrlyService));
 
             services.AddSwaggerGen(c =>
             {
-                c.SwaggerDoc("v1", new Info { Title = "My API", Version = "v1" });
+                c.SwaggerDoc("v1", new Info { Title = "Namrly API", Version = "v1" });
             });
         }
 
@@ -52,7 +55,7 @@ namespace Namrly
             // specifying the Swagger JSON endpoint.
             app.UseSwaggerUI(c =>
             {
-                c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Namrly API V1");
                 c.RoutePrefix = string.Empty;
             });
 

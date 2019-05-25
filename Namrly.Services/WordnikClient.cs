@@ -6,7 +6,7 @@ using Newtonsoft.Json;
 
 namespace Namrly.Services 
 {
-    public class WordnikClient 
+    public class WordnikClient : IRandomWordService
     {
         private readonly string _wordnikApiKey;
         private readonly string _wordnikBaseAddress = "https://api.wordnik.com";
@@ -43,8 +43,8 @@ namespace Namrly.Services
 
         public async Task<IEnumerable<string>> GetSynonyms(string baseWord) 
         {
-            if (baseWord == null) return null;
             var synonyms = new List<string>();
+            if (baseWord == null) return synonyms;
 
             using (var client = new HttpClient())
             {

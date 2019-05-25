@@ -8,15 +8,15 @@ namespace Namrly.Services
 
     public class NamrlyService : INamrlyService
     {
-        private WordnikClient _randomWordProxy = null;
+        private IRandomWordService _randomWordService = null;
         private static readonly Random R = new Random();
         private readonly string[] _vowels = { "a", "e", "i", "o", "u" };
 
-        protected WordnikClient RandomWordProxy => _randomWordProxy != null ? _randomWordProxy : _randomWordProxy = new WordnikClient();
+        protected IRandomWordService RandomWordService => _randomWordService;
         
-        public NamrlyService()
+        public NamrlyService(IRandomWordService randomWordService)
         {
-            
+            this._randomWordService = randomWordService;
         }
 
         public async Task<string> GetRandomName(bool includeAdditionalSuffixes = false) 
@@ -56,7 +56,7 @@ namespace Namrly.Services
         public async Task<IEnumerable<string>> GetRandomNames(int numResults = 1, bool includeAdditionalSuffixes = false)
         {
             var results = new List<string>();
-            var words = await this.RandomWordProxy.GetRandomWords(numResults);
+            var words = await this.RandomWordService.GetRandomWords(numResults);
 
             if (words != null && words.ToList().Count > 0)
             {
@@ -83,12 +83,12 @@ namespace Namrly.Services
             var results = new List<string>();
 
             // gets the list of synonyms, then shuffles
-            var synonyms = (await this.RandomWordProxy.GetSynonyms(baseWord))
-            .ToList()
-            .OrderBy(a => Guid.NewGuid()).ToList();
-
-            if (synonyms != null && synonyms.Count > 0)
+            var synonyms = (await this.RandomWordService.GetSynonyms(baseWord));
+            if (synonyms != null && synonyms.Count() > 0)
             {
+                synonyms.ToList()
+                .OrderBy(a => Guid.NewGuid()).ToList();
+
                 foreach (var synonym in synonyms) {
                     var newWord = synonym.Clone().ToString();
 
@@ -147,20 +147,20 @@ namespace Namrly.Services
 
             return wasSuccessful;
         }
-    }
 
-    enum Suffixes
-    {
-        ly,
-        r,
-        rly,
-        bits,
-        ify,
-    }
+        private enum Suffixes
+        {
+            ly,
+            r,
+            rly,
+            bits,
+            ify,
+        }
 
-    enum AdditionalSuffixes
-    {
-       bon,
-       a
+        private enum AdditionalSuffixes
+        {
+            bon,
+            a
+        }
     }
 }

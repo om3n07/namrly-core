@@ -11,25 +11,26 @@ namespace Namrly.Controllers
     [Route("api/[controller]")]
     public class StartupNameController : Controller
     {
-        private NamrlyService _namrlyService;
-        public NamrlyService NamrlyService => this._namrlyService != null ? this._namrlyService : this._namrlyService = new NamrlyService();
+        private INamrlyService _namrlyService;
+        public INamrlyService NamrlyService => this._namrlyService;
 
-
-
+        public StartupNameController(INamrlyService namrlyService)
+        {
+            this._namrlyService = namrlyService;
+        }
 
         [HttpGet]
         public async Task<ActionResult> GetName(
-            [FromQuery] string baseWord = null,
-            [FromQuery] bool includeAdditionalSuffixes = false)
+            [FromQuery] string baseWord = null)
         {
             var results = string.Empty;
             if (!string.IsNullOrEmpty(baseWord)) 
             {
-                results = await this.NamrlyService.GetRandomName(baseWord, includeAdditionalSuffixes);
+                results = await this.NamrlyService.GetRandomName(baseWord);
             } 
             else
             {
-                results = await this.NamrlyService.GetRandomName(includeAdditionalSuffixes);
+                results = await this.NamrlyService.GetRandomName();
             }
 
             if (results == null) return this.NoContent();

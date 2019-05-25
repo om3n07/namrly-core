@@ -10,22 +10,26 @@ namespace Namrly.Controllers
     [Route("api/[controller]")]
     public class StartupNamesController : Controller
     {
-        private NamrlyService _namrlyService;
+        private INamrlyService _namrlyService;
 
-        public NamrlyService NamrlyService => this._namrlyService != null ? this._namrlyService : this._namrlyService = new NamrlyService();
+        public INamrlyService NamrlyService => this._namrlyService;
+
+        public StartupNamesController(INamrlyService namrlyService)
+        {
+            this._namrlyService = namrlyService;
+        }
 
 
         [HttpGet]
         public async Task<ActionResult> GetNames(
             [FromQuery] string baseWord = null,
-            [FromQuery] bool includeAdditionalSuffixes = false,
              [FromQuery] int? numResults = null)
         {
             IEnumerable<string> results;
             if (!string.IsNullOrEmpty(baseWord)) {
-                results = await this.NamrlyService.GetRandomNames(baseWord, numResults ?? 1, includeAdditionalSuffixes);
+                results = await this.NamrlyService.GetRandomNames(baseWord, numResults ?? 1);
             } else {
-                results = await this.NamrlyService.GetRandomNames( numResults ?? 1, includeAdditionalSuffixes);
+                results = await this.NamrlyService.GetRandomNames(numResults ?? 1);
             }
 
             if (results == null) return NoContent();
