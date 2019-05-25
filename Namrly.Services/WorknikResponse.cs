@@ -5,7 +5,7 @@ using System.Web;
 
 using Newtonsoft.Json;
 
-namespace Namrly.WordnikApi
+namespace Namrly.Services
 {
     public class WordnikResponse
     {

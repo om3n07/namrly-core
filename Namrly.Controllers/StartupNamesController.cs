@@ -2,9 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Namrly.Services;
 using Microsoft.AspNetCore.Mvc;
 
-namespace namrly.Controllers
+namespace Namrly.Controllers
 {
     [Route("api/[controller]")]
     public class StartupNamesController : Controller
