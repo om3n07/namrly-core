@@ -39,7 +39,6 @@ namespace Namrly.Services
 
                 return JsonConvert.DeserializeObject<List<WordnikSingleResponse>>(jsonString).Select(word => word.word).ToList();
             }
-
         }
 
         public async Task<ICollection<string>> GetSynonyms(string baseWord)
