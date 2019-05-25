@@ -18,4 +18,11 @@ namespace Namrly.Services
         public int id { get; set; }
         public string word { get; set; }
     }
+
+    public class WordnikNotFoundResponse
+    {
+        public string statusCode { get; set; }
+        public string Error { get; set; }
+        public string Message { get; set; }
+    }
 }

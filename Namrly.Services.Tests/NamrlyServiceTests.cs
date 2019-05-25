@@ -11,7 +11,7 @@ namespace Namrly.Services.Tests
     public class NamrlyServiceTests
     {
         [Fact]
-        public async void GetRandomName_GetsRandomName()
+        public async void GetRandomNames_GetsRandomNames()
         {
             // arrange
             var mock = new Mock<IRandomWordService>();
@@ -20,11 +20,13 @@ namespace Namrly.Services.Tests
             INamrlyService namrlyService = new NamrlyService(mock.Object);
 
             // act
-            var word = await namrlyService.GetRandomName();
+            var words = await namrlyService.GetRandomStartupNames();
 
             // assert
-            word.Should().NotBe(null);
-            word.Should().NotBe("RandomWord1");
+            words.Should().NotBeNull();
+            words.Should().BeOfType<List<string>>();
+            words.Should().NotContain("RandomWord1");
+            words.Count.Should().Be(1);
         }
 
         [Fact]
@@ -38,15 +40,16 @@ namespace Namrly.Services.Tests
             INamrlyService namrlyService = new NamrlyService(mock.Object);
 
             // act
-            var words = await namrlyService.GetRandomNames(2);
+            var words = await namrlyService.GetRandomStartupNames(2);
 
             // assert
+            words.Should().NotBeNull();
             words.Should().BeOfType<List<string>>();
             words.Count.Should().Be(2);
         }
 
         [Fact]
-        public async void GetRandomName_BasedOnWordGetsNewWord()
+        public async void GetRelatedName_GetsRelatedName()
         {
             // arrange
             var mock = new Mock<IRandomWordService>();
@@ -57,9 +60,10 @@ namespace Namrly.Services.Tests
             INamrlyService namrlyService = new NamrlyService(mock.Object);
 
             // act
-            var words = await namrlyService.GetRandomNames("biscuit");
+            var words = await namrlyService.GetRelatedStartupNames("biscuit");
 
             // assert
+            words.Should().NotBeNull();
             words.Should().BeOfType<List<string>>();
             words.Count.Should().Be(1);
             words.Should().NotContain("biscuits");

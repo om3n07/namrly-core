@@ -19,40 +19,7 @@ namespace Namrly.Services
             this._randomWordService = randomWordService;
         }
 
-        public async Task<string> GetRandomName(bool includeAdditionalSuffixes = false)
-        {
-            var name = string.Empty;
-            var results = (await this.GetRandomNames(1, includeAdditionalSuffixes)).ToList();
-
-            // Get a random name from the list of returned results.
-            if (results != null && results.Count > 0)
-            {
-                name = results[0];
-            }
-
-            return name;
-        }
-
-        public async Task<string> GetRandomName(string baseWord, bool includeAdditionalSuffixes = false)
-        {
-            var name = string.Empty;
-            var results = (await this.GetRandomNames(baseWord, 1, includeAdditionalSuffixes)).ToList();
-
-            // Get a random name from the list of returned results.
-            if (results != null && results.Count > 0)
-            {
-                name = results[0];
-            }
-
-            return name;
-        }
-
-        public async Task<ICollection<string>> GetRandomNames(int numResults = 1)
-        {
-            return await this.GetRandomNames(null, numResults);
-        }
-
-        public async Task<ICollection<string>> GetRandomNames(int numResults = 1, bool includeAdditionalSuffixes = false)
+        public async Task<ICollection<string>> GetRandomStartupNames(int numResults = 1)
         {
             var results = new List<string>();
             var words = await this.RandomWordService.GetRandomWords(numResults);
@@ -68,7 +35,7 @@ namespace Namrly.Services
                         this.DropVowel(ref newWord);
                     }
 
-                    newWord += GetRandomSuffix(includeAdditionalSuffixes);
+                    newWord += GetRandomSuffix();
 
                     results.Add(newWord);
                 }
@@ -77,7 +44,7 @@ namespace Namrly.Services
             return results;
         }
 
-        public async Task<ICollection<string>> GetRandomNames(string baseWord, int numResults = 1, bool includeAdditionalSuffixes = false)
+        public async Task<ICollection<string>> GetRelatedStartupNames(string baseWord, int maxNumResults = 1)
         {
             var results = new List<string>();
 
@@ -85,33 +52,29 @@ namespace Namrly.Services
             var synonyms = (await this.RandomWordService.GetSynonyms(baseWord));
             if (synonyms != null && synonyms.Count() > 0)
             {
-                synonyms.ToList()
-                .OrderBy(a => Guid.NewGuid()).ToList();
+                synonyms = synonyms
+                    .ToList()
+                    .OrderBy(a => Guid.NewGuid()).ToList();
 
                 foreach (var synonym in synonyms)
                 {
                     var newWord = synonym.Clone().ToString();
 
                     if (this.ShouldDropVowel()) this.DropVowel(ref newWord);
-                    newWord += GetRandomSuffix(includeAdditionalSuffixes);
+                    newWord += GetRandomSuffix();
 
                     results.Add(newWord);
 
                     // don't want to return more than the requested number of results.
-                    if (--numResults == 0) break;
+                    if (--maxNumResults == 0) break;
                 }
             }
 
             return results;
         }
 
-        private static string GetRandomSuffix(bool includeAdditionalSuffixes)
+        private static string GetRandomSuffix()
         {
-            if (includeAdditionalSuffixes && R.Next(2) == 0)
-            {
-                return ((AdditionalSuffixes)R.Next(0, Enum.GetNames(typeof(AdditionalSuffixes)).Length)).ToString();
-            }
-
             return ((Suffixes)R.Next(0, Enum.GetNames(typeof(Suffixes)).Length)).ToString();
         }
 

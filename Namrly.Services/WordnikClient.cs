@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
@@ -56,7 +57,17 @@ namespace Namrly.Services
                     + "&maxLength=" + _maxWordLength;
                 var rawResponse = await client.GetAsync(request);
                 var jsonString = await rawResponse.Content.ReadAsStringAsync();
-                var response = JsonConvert.DeserializeObject<WordnikResponse[]>(jsonString);
+
+                WordnikResponse[] response = null;
+                
+                try 
+                {
+                    response = JsonConvert.DeserializeObject<WordnikResponse[]>(jsonString);
+                }
+                catch (Exception)
+                {
+                    System.Console.WriteLine($"Could not parse Wordnik response: {jsonString}");   
+                }
 
                 if (response != null && response.Length > 0 && response[0].words.Length > 0)
                 {
