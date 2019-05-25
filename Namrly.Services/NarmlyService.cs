@@ -47,12 +47,12 @@ namespace Namrly.Services
             return name;
         }
 
-        public async Task<IEnumerable<string>> GetRandomNames(int numResults = 1)
+        public async Task<ICollection<string>> GetRandomNames(int numResults = 1)
         {
             return await this.GetRandomNames(null, numResults);
         }
 
-        public async Task<IEnumerable<string>> GetRandomNames(int numResults = 1, bool includeAdditionalSuffixes = false)
+        public async Task<ICollection<string>> GetRandomNames(int numResults = 1, bool includeAdditionalSuffixes = false)
         {
             var results = new List<string>();
             var words = await this.RandomWordService.GetRandomWords(numResults);
@@ -77,7 +77,7 @@ namespace Namrly.Services
             return results;
         }
 
-        public async Task<IEnumerable<string>> GetRandomNames(string baseWord, int numResults = 1, bool includeAdditionalSuffixes = false)
+        public async Task<ICollection<string>> GetRandomNames(string baseWord, int numResults = 1, bool includeAdditionalSuffixes = false)
         {
             var results = new List<string>();
 

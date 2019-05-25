@@ -25,7 +25,7 @@ namespace Namrly.Services
             this._wordnikApiKey = this.GetApiKey();
         }
 
-        public async Task<IEnumerable<string>> GetRandomWords(int numWords)
+        public async Task<ICollection<string>> GetRandomWords(int numWords)
         {
             using (var client = new HttpClient())
             {
@@ -42,7 +42,7 @@ namespace Namrly.Services
 
         }
 
-        public async Task<IEnumerable<string>> GetSynonyms(string baseWord)
+        public async Task<ICollection<string>> GetSynonyms(string baseWord)
         {
             var synonyms = new List<string>();
             if (baseWord == null) return synonyms;

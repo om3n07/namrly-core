@@ -5,7 +5,7 @@ namespace Namrly.Services
 {
     public interface IRandomWordService
     {
-        Task<IEnumerable<string>> GetRandomWords(int numWords);
-        Task<IEnumerable<string>> GetSynonyms(string baseWord);
+        Task<ICollection<string>> GetRandomWords(int numWords);
+        Task<ICollection<string>> GetSynonyms(string baseWord);
     }
 }

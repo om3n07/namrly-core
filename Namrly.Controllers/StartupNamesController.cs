@@ -23,7 +23,7 @@ namespace Namrly.Controllers
         [HttpGet]
         public async Task<ActionResult> GetNames([FromQuery] string baseWord = null, [FromQuery] int? numResults = null)
         {
-            IEnumerable<string> results;
+            ICollection<string> results;
             if (!string.IsNullOrEmpty(baseWord))
             {
                 results = await this.NamrlyService.GetRandomNames(baseWord, numResults ?? 1);
