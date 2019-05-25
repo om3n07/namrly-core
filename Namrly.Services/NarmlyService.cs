@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Namrly.Services 
+namespace Namrly.Services
 {
 
     public class NamrlyService : INamrlyService
@@ -13,13 +13,13 @@ namespace Namrly.Services
         private readonly string[] _vowels = { "a", "e", "i", "o", "u" };
 
         protected IRandomWordService RandomWordService => _randomWordService;
-        
+
         public NamrlyService(IRandomWordService randomWordService)
         {
             this._randomWordService = randomWordService;
         }
 
-        public async Task<string> GetRandomName(bool includeAdditionalSuffixes = false) 
+        public async Task<string> GetRandomName(bool includeAdditionalSuffixes = false)
         {
             var name = string.Empty;
             var results = (await this.GetRandomNames(1, includeAdditionalSuffixes)).ToList();
@@ -33,7 +33,7 @@ namespace Namrly.Services
             return name;
         }
 
-        public async Task<string> GetRandomName(string baseWord, bool includeAdditionalSuffixes = false) 
+        public async Task<string> GetRandomName(string baseWord, bool includeAdditionalSuffixes = false)
         {
             var name = string.Empty;
             var results = (await this.GetRandomNames(baseWord, 1, includeAdditionalSuffixes)).ToList();
@@ -47,12 +47,11 @@ namespace Namrly.Services
             return name;
         }
 
-
         public async Task<IEnumerable<string>> GetRandomNames(int numResults = 1)
         {
             return await this.GetRandomNames(null, numResults);
         }
-        
+
         public async Task<IEnumerable<string>> GetRandomNames(int numResults = 1, bool includeAdditionalSuffixes = false)
         {
             var results = new List<string>();
@@ -60,21 +59,21 @@ namespace Namrly.Services
 
             if (words != null && words.ToList().Count > 0)
             {
-                foreach(var word in words) 
+                foreach (var word in words)
                 {
                     var newWord = word.Clone().ToString();
 
-                    if (this.ShouldDropVowel()) 
+                    if (this.ShouldDropVowel())
                     {
                         this.DropVowel(ref newWord);
                     }
-                
+
                     newWord += GetRandomSuffix(includeAdditionalSuffixes);
 
                     results.Add(newWord);
                 }
             }
-            
+
             return results;
         }
 
@@ -89,7 +88,8 @@ namespace Namrly.Services
                 synonyms.ToList()
                 .OrderBy(a => Guid.NewGuid()).ToList();
 
-                foreach (var synonym in synonyms) {
+                foreach (var synonym in synonyms)
+                {
                     var newWord = synonym.Clone().ToString();
 
                     if (this.ShouldDropVowel()) this.DropVowel(ref newWord);
@@ -107,11 +107,11 @@ namespace Namrly.Services
 
         private static string GetRandomSuffix(bool includeAdditionalSuffixes)
         {
-            if (includeAdditionalSuffixes && R.Next(2) == 0) 
-            { 
-                return ((AdditionalSuffixes)R.Next(0, Enum.GetNames(typeof(AdditionalSuffixes)).Length)).ToString(); 
+            if (includeAdditionalSuffixes && R.Next(2) == 0)
+            {
+                return ((AdditionalSuffixes)R.Next(0, Enum.GetNames(typeof(AdditionalSuffixes)).Length)).ToString();
             }
-            
+
             return ((Suffixes)R.Next(0, Enum.GetNames(typeof(Suffixes)).Length)).ToString();
         }
 
@@ -135,7 +135,7 @@ namespace Namrly.Services
                     word = word.Substring(0, word.Length - 1);
                     break;
                 }
-                
+
                 if (word[word.Length - 2].ToString() == v)
                 {
                     var e = word[word.Length - 1];

@@ -24,10 +24,10 @@ namespace Namrly.Controllers
             [FromQuery] string baseWord = null)
         {
             var results = string.Empty;
-            if (!string.IsNullOrEmpty(baseWord)) 
+            if (!string.IsNullOrEmpty(baseWord))
             {
                 results = await this.NamrlyService.GetRandomName(baseWord);
-            } 
+            }
             else
             {
                 results = await this.NamrlyService.GetRandomName();
