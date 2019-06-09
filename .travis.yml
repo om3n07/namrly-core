@@ -1,2 +1,10 @@
 language: csharp
 solution: namrly-core.sln
+mono: none
+dotnet: 2.2.300
+install:
+  - nuget restore solution-name.sln
+  - nuget install xunit.runners -Version 1.9.2 -OutputDirectory testrunner
+script:
+- dotnet test
+- dotnet restore
