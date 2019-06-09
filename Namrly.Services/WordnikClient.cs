@@ -46,6 +46,7 @@ namespace Namrly.Services
         {
             var synonyms = new List<string>();
             if (baseWord == null) return synonyms;
+            baseWord = baseWord.ToLower();
 
             using (var client = new HttpClient())
             {
