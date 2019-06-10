@@ -55,7 +55,7 @@ namespace Namrly
             // specifying the Swagger JSON endpoint.
             app.UseSwaggerUI(c =>
             {
-                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Namrly API V1");
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Namrly API V1.0.1");
                 c.RoutePrefix = string.Empty;
             });
 
