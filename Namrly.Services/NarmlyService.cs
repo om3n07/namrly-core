@@ -54,7 +54,8 @@ namespace Namrly.Services
             {
                 synonyms = synonyms
                     .ToList()
-                    .OrderBy(a => Guid.NewGuid()).ToList();
+                    .OrderBy(a => Guid.NewGuid())
+                    .ToList();
 
                 foreach (var synonym in synonyms)
                 {
